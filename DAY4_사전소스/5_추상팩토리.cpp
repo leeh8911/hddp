@@ -34,11 +34,15 @@ struct OSXEdit : public IEdit
 
 int main(int argc, char** argv)
 {
-	? btn;
+	// 상황에 따라 버튼이 달라진다.
+	// 공통의 인터페이스에 담아서 사용해야 함
+	IButton* btn = nullptr;
 	if (strcmp(argv[0], "-style:OSX") == 0)
 		btn = new OSXButton;
 	else
 		btn = new WinButton;
+
+	// 그런데.. 프로그램에서 "버튼을 한개만???"
 }
 
 

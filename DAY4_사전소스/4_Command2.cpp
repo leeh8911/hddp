@@ -28,11 +28,13 @@ struct ICommand {
 	virtual ~ICommand() {}
 };
 
-class AddRectCommand : public ICommand {
+// 도형을 추가하는 명령은 유사한 코드가 많이 있음
+// 유사한 코드가 많다면, 기반 클래스를 만들어서 제공
+class AddCommand : public ICommand {
 	std::vector<Shape*>& v;
 public:
-	AddRectCommand(std::vector<Shape*>& v) : v(v) {}
-	void Execute() override { v.push_back(new Rect); }
+	AddCommand(std::vector<Shape*>& v) : v(v) {}
+	void Execute() override { v.push_back(CreateShape()); }
 
 	bool CanUndo() override { return true; }
 	void Undo() override {
@@ -41,22 +43,24 @@ public:
 
 		delete p;
 	}
+
+	// Factory Method 패턴: 객체를 만들기 위한 인터페이스를 제공하고 사용하지만
+	//						어떤 종류의 객체를 만들지는 파생 클래스가 결정함
+	// Template Method와 동일한 모양이지만, 가상함수가 하는 일이
+	// 알고리즘의 변경이 아닌 "객체의 종류"를 결정
+	virtual Shape* CreateShape() = 0;
+};
+class AddRectCommand : public AddCommand {
+public:
+	using AddCommand::AddCommand;
+	Shape* CreateShape() { return new Rect; }
 };
 
 
-class AddCircleCommand : public ICommand {
-	std::vector<Shape*>& v;
+class AddCircleCommand : public AddCommand {
 public:
-	AddCircleCommand(std::vector<Shape*>& v) : v(v) {}
-	void Execute() override { v.push_back(new Circle); }
-
-	bool CanUndo() override { return true; }
-	void Undo() override {
-		Shape* p = v.back();
-		v.pop_back();
-
-		delete p;
-	}
+	using AddCommand::AddCommand;
+	Shape* CreateShape() { return new Circle; }
 };
 
 class DrawCommand : public ICommand {

@@ -32,16 +32,29 @@ struct OSXEdit : public IEdit
 	void Draw() { std::cout << "Draw OSXButton" << std::endl; }
 };
 //-----------------
+// 추상 팩토리 패턴(Abstract Factory)
+// => 제품의 군을 만들기 위한 인터페이스를 정의 하지만
+// => 만들어지는 파생 클래스(구체적 공장)가 어떤 종류의 제품들을 만들지 결정
+// => 공장도 "인터페이스"를 만들어서 교체 가능하도록
+
+// "Factory" 라는 패턴은 23개 패턴에는 없음. "추상 팩토리"가 있음
+
+struct IFactory {
+	virtual IButton* CreateButton() = 0;
+	virtual IEdit* CreateEdit() = 0;
+	virtual ~IFactory() {}
+};
 
 //  style 별로 각 콘트롤을 만드는 공장
-class WinFactory 
+
+class WinFactory : public IFactory
 {
 public:
 	IButton* CreateButton() { return new WinButton; }
 	IEdit*   CreateEdit()   { return new WinEdit; }
 	virtual ~WinFactory() {}
 };
-class OSXFactory 
+class OSXFactory : public IFactory
 {
 public:
 	IButton* CreateButton() { return new OSXButton; }
@@ -52,7 +65,7 @@ public:
 
 int main(int argc, char** argv)
 {
-	? factory;
+	IFactory* factory;
 	if (strcmp(argv[0], "-style:OSX") == 0)
 		factory = new OSXFactory;
 	else
